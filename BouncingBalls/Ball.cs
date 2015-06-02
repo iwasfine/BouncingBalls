@@ -17,7 +17,7 @@ namespace BouncingBalls
 
         public Brush Color { get; set; }
 
-        public Ball(double px, double py, double vx, double vy, double radius,Brush brush)
+        public Ball(double px, double py, double vx, double vy, double radius, Brush brush)
         {
             this.px = px;
             this.py = py;
@@ -28,10 +28,12 @@ namespace BouncingBalls
             Color = brush;
         }
 
-        public void Move()
+        public void Move(double width, double height)
         {
             px = px + vx;
+            if (Math.Abs(px + radius - width) < 1 || Math.Abs(px - radius) < 1) vx = -vx;
             py = py + vy;
+            if (Math.Abs(py + radius - height) < 1 || Math.Abs(py - radius) < 1) vy = -vy;
         }
     }
 

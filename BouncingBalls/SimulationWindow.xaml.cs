@@ -26,10 +26,11 @@ namespace BouncingBalls
             InitializeComponent();
             border = new Rectangle();
             border.Stroke = Brushes.Black;
-            border.Margin = new Thickness(10, 10, 10, 10);
             border.StrokeThickness = 2;
             border.Width = this.Width - 40;
-            border.Height = this.Height - 50;
+            border.Height = this.Height - 60;
+            Canvas.SetLeft(border, 10);
+            Canvas.SetTop(border, 10);
             canvas.Children.Add(border);
         }
         private DispatcherTimer showTimer = new DispatcherTimer();
@@ -55,7 +56,7 @@ namespace BouncingBalls
         {
             foreach (var item in balls)
             {
-                item.Move();
+                item.Move(border.Width, border.Height);
             }
         }
 
@@ -67,8 +68,8 @@ namespace BouncingBalls
                 Ellipse e = new Ellipse();
                 e.Width = 2 * item.radius;
                 e.Height = 2 * item.radius;
-                Canvas.SetTop(e, item.py - item.radius);
-                Canvas.SetLeft(e, item.px - item.radius);
+                Canvas.SetTop(e, item.py - item.radius + 10);
+                Canvas.SetLeft(e, item.px - item.radius + 10);
                 e.Fill = item.Color;
                 ellipses.Add(e);
                 canvas.Children.Add(e);
@@ -95,8 +96,8 @@ namespace BouncingBalls
         {
             for (int i = 0; i < balls.Count; i++)
             {
-                Canvas.SetTop(ellipses[i], balls[i].py-balls[i].radius);
-                Canvas.SetLeft(ellipses[i], balls[i].px-balls[i].radius);
+                Canvas.SetTop(ellipses[i], balls[i].py - balls[i].radius + 10);
+                Canvas.SetLeft(ellipses[i], balls[i].px - balls[i].radius + 10);
             }
         }
     }
