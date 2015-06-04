@@ -24,6 +24,11 @@ namespace BouncingBalls
         public int Ball2;
         public int Time;
     }
+    enum Wall
+    {
+        VerticalWall = -1,
+        HorizontalWall = -2
+    }
     /// <summary>
     /// Interaction logic for SimulationWindow.xaml
     /// </summary>
@@ -67,10 +72,15 @@ namespace BouncingBalls
         private void initializeCollision()
         {
             int n = balls.Count;
-            collision = new int[n + 1, n + 1];
+            collision = new int[n + 2, n + 2];
             for (int i = 0; i < n; i++)
             {
-                int cTime = balls[i].TimeToHitWall(border.Width, border.Height) ;
+                int cTime = balls[i].TimeToHitVerticalWall();
+                //while (cTime == 0)
+                //{
+                //    balls[i].BounceOffVerticalWall();
+                //    cTime = balls[i].TimeToHitVerticalWall();
+                //}
                 if (cTime > 6000000) continue;
                 cTime += time;
                 collision[i, n] = cTime;
@@ -78,7 +88,23 @@ namespace BouncingBalls
                 c.Time = cTime;
                 c.IsBall = false;
                 c.Ball1 = i;
-                c.Ball2 = -1;
+                c.Ball2 = (int)Wall.VerticalWall;
+                pq.Add(c);
+
+                cTime = balls[i].TimeToHitHorizontalWall();
+                //while (cTime == 0)
+                //{
+                //    balls[i].BounceOffVerticalWall();
+                //    cTime = balls[i].TimeToHitVerticalWall();
+                //}
+                if (cTime > 6000000) continue;
+                cTime += time;
+                collision[i, n + 1] = cTime;
+                c = new Collision();
+                c.Time = cTime;
+                c.IsBall = false;
+                c.Ball1 = i;
+                c.Ball2 = (int)Wall.HorizontalWall;
                 pq.Add(c);
             }
             //for (int i = 0; i < n; i++)
@@ -105,7 +131,7 @@ namespace BouncingBalls
             {
                 item.Move(border.Width, border.Height);
             }
-            while(pq.Peek().Time == time)
+            while (pq.Peek().Time == time)
             {
                 int n = balls.Count;
                 Collision c = pq.Poll();
@@ -116,18 +142,36 @@ namespace BouncingBalls
                 else
                 {
                     Ball ball = balls[c.Ball1];
-                    if(time != collision[c.Ball1,n]) return;
-                    ball.BounceOffWall(border.Width,border.Height);
-                    int temp = ball.TimeToHitWall(border.Width, border.Height);
-                    if (temp > 6000000) return;
-                    temp += time;
-                    collision[c.Ball1, n] = temp;
-                    Collision newC = new Collision();
-                    newC.Time = temp;
-                    newC.IsBall = false;
-                    newC.Ball1 = c.Ball1;
-                    newC.Ball2 = -1;
-                    pq.Add(newC);
+                    if (c.Ball2 == (int)Wall.VerticalWall)
+                    {
+                        if (time != collision[c.Ball1, n]) return;
+                        ball.BounceOffVerticalWall();
+                        int temp = ball.TimeToHitVerticalWall();
+                        if (temp > 6000000) return;
+                        temp += time;
+                        collision[c.Ball1, n] = temp;
+                        Collision newC = new Collision();
+                        newC.Time = temp;
+                        newC.IsBall = false;
+                        newC.Ball1 = c.Ball1;
+                        newC.Ball2 = (int)Wall.VerticalWall;
+                        pq.Add(newC);
+                    }
+                    else
+                    {
+                        if (time != collision[c.Ball1, n + 1]) return;
+                        ball.BounceOffHorizontalWall();
+                        int temp = ball.TimeToHitHorizontalWall();
+                        if (temp > 6000000) return;
+                        temp += time;
+                        collision[c.Ball1, n + 1] = temp;
+                        Collision newC = new Collision();
+                        newC.Time = temp;
+                        newC.IsBall = false;
+                        newC.Ball1 = c.Ball1;
+                        newC.Ball2 = (int)Wall.HorizontalWall;
+                        pq.Add(newC);
+                    }
                 }
             }
         }
@@ -156,14 +200,14 @@ namespace BouncingBalls
             Random rnd = new Random();
             for (int i = 0; i < numOfBalls; i++)
             {
-                double px = rnd.NextDouble() * (x - 20);
-                double py = rnd.NextDouble() * (y - 20);
+                double px = rnd.NextDouble() * (x - 30)+15;
+                double py = rnd.NextDouble() * (y - 30)+15;
                 double vx = (rnd.NextDouble() - 0.5) * 5;
                 double vy = (rnd.NextDouble() - 0.5) * 5;
                 //double vx = 5;
                 //double vy = 5;
-                double radius = 8;
-                balls.Add(new Ball(px, py, vx, vy, radius, Brushes.Blue));
+                double radius = 3;
+                balls.Add(new Ball(px, py, vx, vy, radius, Brushes.Blue, x, y));
             }
         }
 
