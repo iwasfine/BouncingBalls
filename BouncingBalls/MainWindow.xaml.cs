@@ -29,7 +29,7 @@ namespace BouncingBalls
         {
             var sim = new SimulationWindow();
             sim.Show();
-            sim.Simulate(500);
+            sim.Simulate(10);
             //sim.Change();
         }
     }

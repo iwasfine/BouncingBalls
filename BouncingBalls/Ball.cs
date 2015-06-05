@@ -15,12 +15,12 @@ namespace BouncingBalls
         public readonly double radius;
         private readonly double mass;
 
-        private double width;
-        private double height;
+        //private double width;
+        //private double height;
 
         public Brush Color { get; set; }
 
-        public Ball(double px, double py, double vx, double vy, double radius, Brush brush, double width, double height)
+        public Ball(double px, double py, double vx, double vy, double radius, Brush brush)
         {
             this.px = px;
             this.py = py;
@@ -29,8 +29,6 @@ namespace BouncingBalls
             this.radius = radius;
             this.mass = radius * radius * radius * Math.PI * 4 / 3;
             Color = brush;
-            this.width = width;
-            this.height = height;
         }
 
         public void Move(double width, double height)
@@ -39,31 +37,11 @@ namespace BouncingBalls
             py = py + vy;
         }
 
-        //public int TimeToHitWall(double width, double height)
-        //{
-        //    int time = int.MaxValue;
-        //    if (vx > 0) time = Math.Min(time, Math.Abs((int)((width - (px + radius)) / vx)));
-        //    else time = Math.Min(time, Math.Abs((int)(-(px - radius) / vx)));
-        //    if (vy > 0) time = Math.Min(time, Math.Abs((int)((height - (py + radius)) / vy)));
-        //    else time = Math.Min(time, Math.Abs((int)(-(py - radius) / vy)));
-        //    return time;
-        //}
-
-        //public void BounceOffWall(double width, double height)
-        //{
-        //    //if (Math.Abs(px + radius - width) < 1 || Math.Abs(px - radius) < 1 || px + radius > width || px - radius < 0) vx = -vx;
-        //    //if (Math.Abs(py + radius - height) < 1 || Math.Abs(py - radius) < 1 || py + radius > height || py - radius < 0) vy = -vy;
-        //    double x = Math.Min(Math.Abs(px + radius - width), Math.Abs(px - radius));
-        //    double y = Math.Min(Math.Abs(py + radius - height), Math.Abs(py - radius));
-        //    if (x < y) vx = -vx;
-        //    else vy = -vy;
-        //}
-
         internal int TimeToHitVerticalWall()
         {
             int time = int.MaxValue;
             if (vx == 0) return int.MaxValue;
-            if (vx > 0) time = Math.Min(time, Math.Abs((int)((width - (px + radius)) / vx)));
+            if (vx > 0) time = Math.Min(time, Math.Abs((int)((1 - (px + radius)) / vx)));
             else time = Math.Min(time, Math.Abs((int)(-(px - radius) / vx)));
             return time;
         }
@@ -72,7 +50,7 @@ namespace BouncingBalls
         {
             int time = int.MaxValue;
             if (vy == 0) return int.MaxValue;
-            if (vy > 0) time = Math.Min(time, Math.Abs((int)((height - (py + radius)) / vy)));
+            if (vy > 0) time = Math.Min(time, Math.Abs((int)((1 - (py + radius)) / vy)));
             else time = Math.Min(time, Math.Abs((int)(-(py - radius) / vy)));
             return time;
         }
@@ -85,6 +63,52 @@ namespace BouncingBalls
         internal void BounceOffHorizontalWall()
         {
             vy = -vy;
+        }
+
+        internal int TimeToHitBall(Ball b)
+        {
+            Ball a = this;
+            if (a == b) return int.MaxValue;
+            double dx = b.px - a.px;
+            double dy = b.py - a.py;
+            double dvx = b.vx - a.vx;
+            double dvy = b.vy - a.vy;
+            double dvdr = dx * dvx + dy * dvy;
+            if (dvdr > 0) return int.MaxValue;
+            double dvdv = dvx * dvx + dvy * dvy;
+            double drdr = dx * dx + dy * dy;
+            double sigma = a.radius + b.radius;
+            double d = (dvdr * dvdr) - dvdv * (drdr - sigma * sigma);
+            if (d < 0) return int.MaxValue;
+            return (int)(-(dvdr + Math.Sqrt(d)) / dvdv);
+        }
+
+        internal void BounceOffBall(Ball that)
+        {
+            double dx = that.px - this.px;
+            double dy = that.py - this.py;
+            double dvx = that.vx - this.vx;
+            double dvy = that.vy - this.vy;
+            double dvdr = dx * dvx + dy * dvy;
+            double dist = this.radius + that.radius;
+
+            double F = 2 * this.mass * that.mass * dvdr / ((this.mass + that.mass) * dist);
+            double fx = F * dx / dist;
+            double fy = F * dy / dist;
+
+            this.vx += fx / this.mass;
+            this.vy += fy / this.mass;
+            that.vx -= fx / that.mass;
+            that.vy -= fy / that.mass;
+
+            //double msub = this.mass - that.mass;
+            //double msum = this.mass + that.mass;
+            //double vxtemp = msub * vx + 2 * that.mass * that.vx;
+            //double vytemp = msub * vy + 2 * that.mass * that.vy;
+            //that.vx = (-msub * that.vx + 2 * mass * vx) / msum;
+            //that.vy = (-msub * that.vy + 2 * mass * vy) / msum;
+            //vx = vxtemp / msum;
+            //vy = vytemp / msum;
         }
     }
 
