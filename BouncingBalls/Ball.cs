@@ -10,80 +10,87 @@ namespace BouncingBalls
 {
     public class Ball
     {
-        public double px, py;
+        public double px { get; private set; }
+        public double py { get; private set; }
         private double vx, vy;
-        public readonly double radius;
+        public double radius { get; private set; }
         private readonly double mass;
-
-        //private double width;
-        //private double height;
-
         public Brush Color { get; set; }
+        public int Count { get; private set; }
 
-        public Ball(double px, double py, double vx, double vy, double radius, Brush brush)
+        public Ball()
+        {
+            Random rnd = new Random();
+            px = rnd.NextDouble();
+            py = rnd.NextDouble();
+            vx = 0.01 * (rnd.NextDouble() - 0.5);
+            vy = 0.01 * (rnd.NextDouble() - 0.5);
+            radius = 0.01;
+            mass = 0.5;
+            Color = Brushes.Black;
+        }
+        public Ball(double px, double py, double vx, double vy, double radius, double mass, Color color)
         {
             this.px = px;
             this.py = py;
             this.vx = vx;
             this.vy = vy;
             this.radius = radius;
-            this.mass = radius * radius * radius * Math.PI * 4 / 3;
-            Color = brush;
+            this.mass = mass;
+            Color = new SolidColorBrush(color);
         }
 
-        public void Move(double width, double height)
+        public void Move(double dt)
         {
-            px = px + vx;
-            py = py + vy;
+            px = px + vx * dt;
+            py = py + vy * dt;
         }
 
-        internal int TimeToHitVerticalWall()
+        public double TimeToHitVerticalWall()
         {
-            int time = int.MaxValue;
-            if (vx == 0) return int.MaxValue;
-            if (vx > 0) time = Math.Min(time, Math.Abs((int)((1 - (px + radius)) / vx)));
-            else time = Math.Min(time, Math.Abs((int)(-(px - radius) / vx)));
-            return time;
+            if (vx == 0) return double.PositiveInfinity;
+            if (vx > 0) return (1 - (px + radius)) / vx;
+            return -(px - radius) / vx;
         }
 
-        internal int TimeToHitHorizontalWall()
+        public double TimeToHitHorizontalWall()
         {
-            int time = int.MaxValue;
-            if (vy == 0) return int.MaxValue;
-            if (vy > 0) time = Math.Min(time, Math.Abs((int)((1 - (py + radius)) / vy)));
-            else time = Math.Min(time, Math.Abs((int)(-(py - radius) / vy)));
-            return time;
+            if (vy == 0) return double.PositiveInfinity;
+            if (vy > 0) return (1 - (py + radius)) / vy;
+            return -(py - radius) / vy;
         }
 
-        internal void BounceOffVerticalWall()
+        public void BounceOffVerticalWall()
         {
             vx = -vx;
+            Count++;
         }
 
-        internal void BounceOffHorizontalWall()
+        public void BounceOffHorizontalWall()
         {
             vy = -vy;
+            Count++;
         }
 
-        internal int TimeToHitBall(Ball b)
+        public double TimeToHitBall(Ball b)
         {
             Ball a = this;
-            if (a == b) return int.MaxValue;
+            if (a == b) return double.PositiveInfinity;
             double dx = b.px - a.px;
             double dy = b.py - a.py;
             double dvx = b.vx - a.vx;
             double dvy = b.vy - a.vy;
             double dvdr = dx * dvx + dy * dvy;
-            if (dvdr > 0) return int.MaxValue;
+            if (dvdr > 0) return double.PositiveInfinity;
             double dvdv = dvx * dvx + dvy * dvy;
             double drdr = dx * dx + dy * dy;
             double sigma = a.radius + b.radius;
             double d = (dvdr * dvdr) - dvdv * (drdr - sigma * sigma);
-            if (d < 0) return int.MaxValue;
-            return (int)(-(dvdr + Math.Sqrt(d)) / dvdv);
+            if (d < 0) return double.PositiveInfinity;
+            return -(dvdr + Math.Sqrt(d)) / dvdv;
         }
 
-        internal void BounceOffBall(Ball that)
+        public void BounceOffBall(Ball that)
         {
             double dx = that.px - this.px;
             double dy = that.py - this.py;
@@ -101,14 +108,8 @@ namespace BouncingBalls
             that.vx -= fx / that.mass;
             that.vy -= fy / that.mass;
 
-            //double msub = this.mass - that.mass;
-            //double msum = this.mass + that.mass;
-            //double vxtemp = msub * vx + 2 * that.mass * that.vx;
-            //double vytemp = msub * vy + 2 * that.mass * that.vy;
-            //that.vx = (-msub * that.vx + 2 * mass * vx) / msum;
-            //that.vy = (-msub * that.vy + 2 * mass * vy) / msum;
-            //vx = vxtemp / msum;
-            //vy = vytemp / msum;
+            this.Count++;
+            that.Count++;
         }
     }
 

@@ -17,18 +17,6 @@ using System.Windows.Threading;
 
 namespace BouncingBalls
 {
-    public struct Collision
-    {
-        public bool IsBall;
-        public int Ball1;
-        public int Ball2;
-        public int Time;
-    }
-    enum Wall
-    {
-        VerticalWall = -1,
-        HorizontalWall = -2
-    }
     /// <summary>
     /// Interaction logic for SimulationWindow.xaml
     /// </summary>
@@ -49,10 +37,6 @@ namespace BouncingBalls
         private DispatcherTimer showTimer = new DispatcherTimer();
         private DispatcherTimer ballMoveTimer = new DispatcherTimer();
         private Rectangle border;
-        private PriorityQueue<Collision> pq = new PriorityQueue<Collision>((c1, c2) => c1.Time - c2.Time);
-        private int[,] collision;
-        private int time = 0;
-        private int pretime = 0;
 
         public List<Ball> balls { get; set; }
         private List<Ellipse> ellipses;
