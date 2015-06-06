@@ -37,13 +37,8 @@ namespace BouncingBalls
         private Rectangle border;
         private CollisionSystem sys;
 
-        private Ball[] balls;
-        public async void Simulate(int numOfBalls)
+        public async void Simulate(Ball[] balls)
         {
-            balls = new Ball[numOfBalls];
-            Random rnd = new Random();
-            for (int i = 0; i < numOfBalls; i++)
-                balls[i] = new Ball(rnd);
             sys = new CollisionSystem(balls, canvas, border.Width, 10);
             await sys.SimulateAsync(6000000);
 

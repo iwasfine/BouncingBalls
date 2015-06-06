@@ -28,7 +28,7 @@ namespace BouncingBalls
             mass = 0.5;
             Color = Brushes.Black;
         }
-        public Ball(double px, double py, double vx, double vy, double radius, double mass, Color color)
+        public Ball(double px, double py, double vx, double vy, double radius, double mass, Brush brush)
         {
             this.px = px;
             this.py = py;
@@ -36,7 +36,7 @@ namespace BouncingBalls
             this.vy = vy;
             this.radius = radius;
             this.mass = mass;
-            Color = new SolidColorBrush(color);
+            Color = brush;
         }
 
         public void Move(double dt)
