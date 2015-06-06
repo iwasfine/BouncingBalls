@@ -18,9 +18,8 @@ namespace BouncingBalls
         public Brush Color { get; set; }
         public int Count { get; private set; }
 
-        public Ball()
+        public Ball(Random rnd)
         {
-            Random rnd = new Random();
             px = rnd.NextDouble();
             py = rnd.NextDouble();
             vx = 0.01 * (rnd.NextDouble() - 0.5);
