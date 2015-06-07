@@ -95,7 +95,7 @@ namespace BouncingBalls
 
         private void Simulate(double limit)
         {
-            pq = new PriorityQueue<Collision>((c1, c2) => Math.Sign(c1.Time - c2.Time));
+            pq = new PriorityQueue<Collision>();
             for (int i = 0; i < balls.Length; i++)
             {
                 predict(balls[i], limit);

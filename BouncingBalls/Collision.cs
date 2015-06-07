@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BouncingBalls
 {
-    class Collision : IComparable<Collision>
+    public class Collision : IComparable<Collision>
     {
         public readonly double Time;
         public readonly Ball A, B;
