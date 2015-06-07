@@ -67,11 +67,19 @@ namespace BouncingBalls
         {
             for (int i = 0; i < ellipses.Length; i++)
             {
-                ellipses[i].Dispatcher.Invoke(() =>
+                try
                 {
-                    Canvas.SetTop(ellipses[i], (balls[i].py - balls[i].radius) * size + offset);
-                    Canvas.SetLeft(ellipses[i], (balls[i].px - balls[i].radius) * size + offset);
-                });
+                    ellipses[i].Dispatcher.Invoke(() =>
+                            {
+                                Canvas.SetTop(ellipses[i], (balls[i].py - balls[i].radius) * size + offset);
+                                Canvas.SetLeft(ellipses[i], (balls[i].px - balls[i].radius) * size + offset);
+                            });
+                }
+                catch (Exception)
+                {
+                    
+                    return;
+                }
             }
             Thread.Sleep(30);
             if (t < limit)

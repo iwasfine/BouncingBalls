@@ -76,8 +76,9 @@ namespace BouncingBalls
                 }
                 catch (Exception)
                 {
-                    
-                    throw new Exception("Wrong file format");
+
+                    MessageBox.Show("Wrong file format!");
+                    return;
                 }
                 sr.Close();
                 file.Close();
